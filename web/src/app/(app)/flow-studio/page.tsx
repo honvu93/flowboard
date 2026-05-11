@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 export default function FlowStudioPage() {
   const [messages, setMessages] = useState([{ id: 'welcome', role: 'assistant', content: "Hi! I'm Flow Studio, your AI video creation assistant.\n\nTell me your story idea and I'll help you turn it into a video.\n\nExample: \"I want a 30-second video about a robot exploring a futuristic city at sunset, Pixar style, vertical.\"" }]);
   const [input, setInput] = useState(''); const [loading, setLoading] = useState(false);
-  const bottomRef = useRef(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
 
