@@ -26,7 +26,7 @@ export default function FlowStudioPage() {
           aiMsg.content = content; setMessages(p => p.map(m => m.id === aiMsg.id ? { ...aiMsg } : m));
         }
       }
-    } catch (e) { setMessages(p => [...p, { id: crypto.randomUUID(), role: 'assistant', content: 'Error: ' + e.message }]); }
+    } catch (e: any) { setMessages(p => [...p, { id: crypto.randomUUID(), role: 'assistant', content: 'Error: ' + e.message }]); }
     setLoading(false);
   }, [input, loading]);
 
