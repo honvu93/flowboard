@@ -1,0 +1,180 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+  flowProjects   FlowProject[]
+  flowSessions   FlowStudioSession[]
+}
+
+model Account {
+  id                    String  @id @default(uuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  @@unique([providerId, accountId])
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  expiresAt DateTime
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FlowProject {
+  id              String            @id @default(uuid())
+  name            String
+  story           String?
+  userPaygateTier String            @default("PAYGATE_TIER_TWO")
+  material        String?
+  allowMusic      Boolean           @default(false)
+  allowVoice      Boolean           @default(false)
+  status          String            @default("ACTIVE")
+  userId          String
+  user            User              @relation(fields: [userId], references: [id])
+  characters      FlowCharacter[]
+  videos          FlowVideo[]
+  sessions        FlowStudioSession[]
+  requests        FlowRequest[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+model FlowCharacter {
+  id                String        @id @default(uuid())
+  name              String
+  slug              String
+  entityType        String
+  description       String?
+  imagePrompt       String?
+  voiceDescription  String?
+  mediaId           String?
+  referenceImageUrl String?
+  projectId         String
+  project           FlowProject   @relation(fields: [projectId], references: [id])
+  requests          FlowRequest[]
+  @@unique([projectId, slug])
+}
+
+model FlowVideo {
+  id           String       @id @default(uuid())
+  title        String
+  displayOrder Int          @default(0)
+  orientation  String       @default("VERTICAL")
+  status       String       @default("DRAFT")
+  projectId    String
+  project      FlowProject  @relation(fields: [projectId], references: [id])
+  scenes       FlowScene[]
+  requests     FlowRequest[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model FlowScene {
+  id                       String       @id @default(uuid())
+  displayOrder             Int
+  prompt                   String
+  imagePrompt              String?
+  videoPrompt              String?
+  transitionPrompt         String?
+  characterNames           Json          @default("[]")
+  chainType                String        @default("ROOT")
+  parentSceneId            String?
+  verticalImageMediaId     String?
+  verticalImageUrl         String?
+  horizontalImageMediaId   String?
+  horizontalImageUrl       String?
+  verticalVideoMediaId     String?
+  verticalVideoUrl         String?
+  horizontalVideoMediaId   String?
+  horizontalVideoUrl       String?
+  verticalEndSceneMediaId  String?
+  horizontalEndSceneMediaId String?
+  videoId                  String
+  video                    FlowVideo     @relation(fields: [videoId], references: [id])
+  requests                 FlowRequest[]
+  createdAt                DateTime      @default(now())
+  updatedAt                DateTime      @updatedAt
+}
+
+model FlowRequest {
+  id           String        @id @default(uuid())
+  type         String
+  status       String        @default("PENDING")
+  orientation  String?
+  requestId    String?
+  mediaId      String?
+  outputUrl    String?
+  errorMessage String?
+  retryCount   Int           @default(0)
+  nextRetryAt  DateTime?
+  sceneId      String?
+  scene        FlowScene?    @relation(fields: [sceneId], references: [id])
+  characterId  String?
+  character    FlowCharacter? @relation(fields: [characterId], references: [id])
+  projectId    String
+  project      FlowProject   @relation(fields: [projectId], references: [id])
+  videoId      String?
+  video        FlowVideo?    @relation(fields: [videoId], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  @@index([status])
+  @@index([sceneId])
+  @@index([projectId])
+}
+
+model FlowStudioSession {
+  id        String              @id @default(uuid())
+  title     String?
+  userId    String
+  user      User                @relation(fields: [userId], references: [id])
+  projectId String?
+  project   FlowProject?        @relation(fields: [projectId], references: [id])
+  messages  FlowStudioMessage[]
+  status    String              @default("active")
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+}
+
+model FlowStudioMessage {
+  id         String             @id @default(uuid())
+  sessionId  String
+  session    FlowStudioSession  @relation(fields: [sessionId], references: [id])
+  role       String
+  content    String             @db.Text
+  toolName   String?
+  toolInput  Json?
+  toolResult Json?
+  createdAt  DateTime           @default(now())
+  @@index([sessionId])
+}

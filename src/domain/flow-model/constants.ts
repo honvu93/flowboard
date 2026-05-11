@@ -1,0 +1,14 @@
+export const POLL_INTERVAL_S = 5;
+export const VIDEO_POLL_INTERVAL_S = 10;
+export const VIDEO_POLL_TIMEOUT_S = 420;
+export const API_COOLDOWN_S = 10;
+export const MAX_RETRIES = 5;
+export const MAX_CONCURRENT_REQUESTS = 5;
+export const FLOW_API_TIMEOUT_MS = 60_000;
+export const FLOW_POLL_TIMEOUT_MS = 30_000;
+export const FLOW_MEDIA_TIMEOUT_MS = 15_000;
+export const R2V_MAX_REFS = 3;
+export const R2V_ENTITY_PRIORITY = ['visual_asset', 'character'] as const;
+export const LANDSCAPE_ENTITY_TYPES = new Set(['location']);
+export const MAX_VARIANT_COUNT = 4;
+export const VARIANT_SEED_STRIDE = 9973;

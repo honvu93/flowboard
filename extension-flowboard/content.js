@@ -1,0 +1,4 @@
+const RECAPTCHA_SITE_KEY='6LdsFiUsAAAAAIjVDZcuLhaHiDn5nnHVXVRQGeMV';
+chrome.runtime.onMessage.addListener((msg,sender,sendResponse)=>{if(msg.type==='GET_CAPTCHA'){solveRecaptcha(msg.action).then(t=>sendResponse({token:t})).catch(e=>sendResponse({error:e.message}));return true}});
+async function solveRecaptcha(action){return new Promise((resolve,reject)=>{if(typeof grecaptcha==='undefined'||typeof grecaptcha.enterprise==='undefined'){const s=document.createElement('script');s.src='https://www.google.com/recaptcha/enterprise.js?render='+RECAPTCHA_SITE_KEY;s.onload=()=>doExecute(action,resolve,reject);s.onerror=()=>reject(new Error('reCAPTCHA load failed'));document.head.appendChild(s)}else doExecute(action,resolve,reject)})}
+function doExecute(action,resolve,reject){grecaptcha.enterprise.ready(async()=>{try{const token=await grecaptcha.enterprise.execute(RECAPTCHA_SITE_KEY,{action});resolve(token)}catch(e){reject(e)}})}

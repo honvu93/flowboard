@@ -1,0 +1,26 @@
+{
+  "name": "flowboard",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/infrastructure/http/server.js",
+    "build": "pnpm --dir web install && pnpm --dir web build",
+    "start": "node src/infrastructure/http/server.js",
+    "worker": "node src/workers/flow-operation-worker.js",
+    "db:push": "npx prisma db push",
+    "db:generate": "npx prisma generate",
+    "deploy": "bash deploy/deploy.sh"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.0",
+    "next": "^16.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "prisma": "^6.19.0",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0"
+  }
+}
