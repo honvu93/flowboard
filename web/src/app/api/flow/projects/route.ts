@@ -1,4 +1,4 @@
-import { prisma } from '../../../../../src/infrastructure/db/prisma-client.js';
+import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
@@ -15,8 +15,4 @@ export async function POST(req: NextRequest) {
   }
   return NextResponse.json({ project, video }, { status: 201 });
 }
-
-export async function GET() {
-  const projects = await prisma.flowProject.findMany({ include: { characters: true, videos: { include: { scenes: true } } }, orderBy: { createdAt: 'desc' } });
-  return NextResponse.json(projects);
-}
+export async function GET() { return NextResponse.json(await prisma.flowProject.findMany({ include: { characters: true, videos: { include: { scenes: true } } }, orderBy: { createdAt: 'desc' } })); }
